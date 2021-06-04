@@ -5,6 +5,5 @@
 * 软件结构
 
   * [名词解释](code/名词解释.md)
-  * [提纲](code/名词解释.md)
-  * [PPT](code/CH02 Spring IoC和Bean管理.pdf)
+  * [提纲](code/提纲.md)
 
