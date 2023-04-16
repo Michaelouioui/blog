@@ -1,0 +1,373 @@
+# UDP
+
+网络协议是每个前端工程师都必须要掌握的知识，我们将先来学习传输层中的两个协议：UDP 以及 TCP。对于大部分工程师来说最常用的协议也就是这两个了，并且面试中经常会提问的也是关于这两个协议的区别。
+
+我们先来解答这个常考面试题关于 UDP 部分的内容，然后再详细去学习这个协议。
+
+```!
+常考面试题：UDP 与 TCP 的区别是什么？
+```
+
+首先 UDP 协议是面向无连接的，也就是说不需要在正式传递数据之前先连接起双方。然后 UDP 协议只是数据报文的搬运工，不保证有序且不丢失的传递到对端，并且UDP 协议也没有任何控制流量的算法，总的来说 UDP 相较于 TCP 更加的轻便。
+
+## 面向无连接
+
+首先 UDP 是不需要和 TCP 一样在发送数据前进行三次握手建立连接的，想发数据就可以开始发送了。
+
+并且也只是数据报文的搬运工，不会对数据报文进行任何拆分和拼接操作。
+
+具体来说就是：
+
+- 在发送端，应用层将数据传递给传输层的 UDP 协议，UDP 只会给数据增加一个 UDP 头标识下是 UDP 协议，然后就传递给网络层了
+- 在接收端，网络层将数据传递给传输层，UDP 只去除 IP 报文头就传递给应用层，不会任何拼接操作
+
+## 不可靠性
+
+首先不可靠性体现在无连接上，通信都不需要建立连接，想发就发，这样的情况肯定不可靠。
+
+并且收到什么数据就传递什么数据，并且也不会备份数据，发送数据也不会关心对方是否已经正确接收到数据了。
+
+再者网络环境时好时坏，但是 UDP 因为没有拥塞控制，一直会以恒定的速度发送数据。即使网络条件不好，也不会对发送速率进行调整。这样实现的弊端就是在网络条件不好的情况下可能会导致丢包，但是优点也很明显，在某些实时性要求高的场景（比如电话会议）就需要使用 UDP 而不是 TCP。
+
+## 高效
+
+虽然 UDP 协议不是那么的可靠，但是正是因为它不是那么的可靠，所以也就没有 TCP 那么复杂了，需要保证数据不丢失且有序到达。
+
+因此 UDP 的头部开销小，只有八字节，相比 TCP 的至少二十字节要少得多，在传输数据报文时是很高效的。
+
+![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d01631b2ef6640f58bc7647a2bb73007~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
+
+UDP 头部包含了以下几个数据
+
+- 两个十六位的端口号，分别为源端口（可选字段）和目标端口
+- 整个数据报文的长度
+- 整个数据报文的检验和（IPv4 可选 字段），该字段用于发现头部信息和数据中的错误
+
+## 传输方式
+
+UDP 不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说 UDP 提供了单播，多播，广播的功能。
+
+## 适合使用的场景
+
+UDP 虽然对比 TCP 有很多缺点，但是正是因为这些缺点造就了它高效的特性，在很多实时性要求高的地方都可以看到 UDP 的身影。
+
+### 直播
+
+想必大家都看过直播吧，大家可以考虑下如果直播使用了基于 TCP 的协议会发生什么事情？
+
+TCP 会严格控制传输的正确性，一旦有某一个数据对端没有收到，就会停止下来直到对端收到这个数据。这种问题在网络条件不错的情况下可能并不会发生什么事情，但是在网络情况差的时候就会变成画面卡住，然后再继续播放下一帧的情况。
+
+但是对于直播来说，用户肯定关注的是最新的画面，而不是因为网络条件差而丢失的老旧画面，所以 TCP 在这种情况下无用武之地，只会降低用户体验。
+
+### 王者荣耀
+
+虽然我具体不知道王者荣耀底层使用了什么协议，但是对于这类实时性要求很高的游戏来说，UDP 是跑不了的。
+
+为什么这样说呢？首先对于王者荣耀来说，用户体量是相当大的，如果使用 TCP 连接的话，就可能会出现服务器不够用的情况，因为每台服务器可供支撑的 TCP 连接数量是有限制的。
+
+再者，因为 TCP 会严格控制传输的正确性，如果因为用户网络条件不好就造成页面卡顿然后再传输旧的游戏画面是肯定不能接受的，毕竟对于这类实时性要求很高的游戏来说，最新的游戏画面才是最需要的，而不是老旧的画面，否则角色都不知道死多少次了。
+
+## 小结
+
+这一章节的内容就到这里，因为 UDP 协议相对简单，所以内容并不是很多，但是下一章节会呈现很多关于 TCP 相关的内容，请大家做好准备。
+
+最后总结一下这一章节的内容：
+
+- UDP 相比 TCP 简单的多，不需要建立连接，不需要验证数据报文，不需要流量控制，只会把想发的数据报文一股脑的丢给对端
+- 虽然 UDP 并没有 TCP 传输来的准确，但是也能在很多实时性要求高的地方有所作为
+
+留言
+
+![img](https://p9-passport.byteacctimg.com/img/user-avatar/5e41ee1c076d80557fa78839ed4c71c7~300x300.image)
+
+发表评论
+
+全部评论（30）
+
+[![跑跑玛丽兔的头像](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/888061127821784)
+
+[跑跑玛丽兔](https://juejin.cn/user/888061127821784)
+
+前端开发4月前
+
+js能不能发udp？
+
+点赞
+
+1
+
+[![img](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/3790771823319053)
+
+[阿高高咯](https://juejin.cn/user/3790771823319053)
+
+3月前
+
+传输层协议怎么和js有关系了？
+
+点赞
+
+回复
+
+[![hm496的头像](https://p26-passport.byteacctimg.com/img/mosaic-legacy/3791/5070639578~300x300.image)](https://juejin.cn/user/184373684999783)
+
+[hm496](https://juejin.cn/user/184373684999783)
+
+1年前
+
+文中有的图片没了，望修复下
+
+点赞
+
+回复
+
+[![彭鱼晏的头像](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/430664289373566)
+
+[彭鱼晏![lv-1](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/636691cd590f92898cfcda37357472b8.svg)](https://juejin.cn/user/430664289373566)
+
+国服第一菜逼 @ 工地1年前
+
+莫要狡辩，已经是催你经常玩王者
+
+点赞
+
+回复
+
+[![mzong的头像](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/2928754705582798)
+
+[mzong![lv-2](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/f597b88d22ce5370bd94495780459040.svg)](https://juejin.cn/user/2928754705582798)
+
+web前端烹饪师2年前
+
+给大家举个例子
+UDP：相当于发信息，不需要对方同意就可以发，也不知道对方看了短信没有。
+TCP：相当于打电话，需要对方同意了接听电话，可靠，知道对方接了电话
+
+40
+
+6
+
+[![img](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/4160207731821736)
+
+[铁蛋ironEggs![lv-1](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/636691cd590f92898cfcda37357472b8.svg)](https://juejin.cn/user/4160207731821736)
+
+2年前
+
+这个类比挺好的
+
+点赞
+
+回复
+
+[![img](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/3122268753627016)
+
+[谷小逸](https://juejin.cn/user/3122268753627016)
+
+2年前
+
+牛皮
+
+点赞
+
+回复
+
+查看更多回复
+
+[![弹珠的头像](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/2189882894594840)
+
+[弹珠](https://juejin.cn/user/2189882894594840)
+
+2年前
+
+王者荣耀这个不好说吧，我也没研究过。但是它与后台传输的只是操作数据(比如移动、释放技能等)，画面都是手机端通过模型实时渲染的
+
+点赞
+
+1
+
+[![img](https://p26-passport.byteacctimg.com/img/user-avatar/93ae043958cdce68701b2571fbd6214c~300x300.image)](https://juejin.cn/user/2928754708978551)
+
+[Orime小猪![lv-2](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/f597b88d22ce5370bd94495780459040.svg)](https://juejin.cn/user/2928754708978551)
+
+1年前
+
+这个传输数据的过程需要格外密集吧，所以是不是会搞个udp呢
+
+点赞
+
+回复
+
+[![JYone223的头像](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/1204720475574398)
+
+[JYone223](https://juejin.cn/user/1204720475574398)
+
+3年前
+
+查了一下，直播用的RTMP、RTSP等网络协议似乎是基于TCP的啊
+
+4
+
+回复
+
+[![Server45742的头像](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AQMAAAAAMksxAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAA5JREFUKM9jGAWjAAcAAAIcAAE27nY6AAAAAElFTkSuQmCC)](https://juejin.cn/user/1679709496952494)
+
+[Server45742](https://juejin.cn/user/1679709496952494)
+
+3年前
+
+………
+
+点赞
+
+回复
+
+[![ZedCoding的头像](https://p9-passport.byteacctimg.com/img/user-avatar/5a7bc1423ba1db61723cc44924335708~300x300.image)](https://juejin.cn/user/3790771822532110)
+
+[ZedCoding](https://juejin.cn/user/3790771822532110)
+
+前端 @ 杭州高级切图工作室3年前
+
+好懵逼啊
+
+1
+
+回复
+
+[![承重墙右的头像](https://p9-passport.byteacctimg.com/img/user-avatar/95a4c0cf24ca1fce40e57e11b094955d~300x300.image)](https://juejin.cn/user/3808364008337550)
+
+[承重墙右](https://juejin.cn/user/3808364008337550)
+
+FE @ SF3年前
+
+这内容有点拉阿![😂](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-assets/asset/twemoji/2.6.0/svg/1f602.svg~tplv-t2oaga2asx-image.image)
+
+2
+
+1
+
+[![img](https://p26-passport.byteacctimg.com/img/user-avatar/a386aa8db73c9678458ec34161472ca5~300x300.image)](https://juejin.cn/user/712139233840407)
+
+[yck![lv-7](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/7a2d00014351211140dd9bc0ba3afd8c.svg)](https://juejin.cn/user/712139233840407)
+
+（作者）3年前
+
+UDP 本来就没东西可以说
+
+点赞
+
+回复
+
+[![crackedlove的头像](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/26/1674dfb5865d5694~tplv-t2oaga2asx-no-mark:100:100:100:100.awebp)](https://juejin.cn/user/2225067265633431)
+
+[crackedlove](https://juejin.cn/user/2225067265633431)
+
+前端攻城狮3年前
+
+最后一句“虽然 UDP 并没有 TCP 传输来的准备”敲错了吧
+
+1
+
+1
+
+[![img](https://p26-passport.byteacctimg.com/img/user-avatar/a386aa8db73c9678458ec34161472ca5~300x300.image)](https://juejin.cn/user/712139233840407)
+
+[yck![lv-7](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/7a2d00014351211140dd9bc0ba3afd8c.svg)](https://juejin.cn/user/712139233840407)
+
+（作者）3年前
+
+准确
+
+点赞
+
+回复
+
+[![joman的头像](https://p26-passport.byteacctimg.com/img/user-avatar/fdff6567dc5f7a7adeaf61d0b0a4c3b0~300x300.image)](https://juejin.cn/user/1151943916665383)
+
+[joman](https://juejin.cn/user/1151943916665383)
+
+前端工程师 @ 广州凡科互联网科技股份有限公司3年前
+
+小结的这里‘’虽然 UDP 并没有 TCP 传输来的准备‘’ 来的准备是什么意思？
+
+点赞
+
+1
+
+[![img](https://p26-passport.byteacctimg.com/img/user-avatar/a386aa8db73c9678458ec34161472ca5~300x300.image)](https://juejin.cn/user/712139233840407)
+
+[yck![lv-7](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/7a2d00014351211140dd9bc0ba3afd8c.svg)](https://juejin.cn/user/712139233840407)
+
+（作者）3年前
+
+准确
+
+点赞
+
+回复
+
+[![JasonXiaoSpace的头像](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/mirror-assets/168e09c02889ebc2ba4~tplv-t2oaga2asx-no-mark:100:100:100:100.awebp)](https://juejin.cn/user/1961184475223645)
+
+[JasonXiaoSpace](https://juejin.cn/user/1961184475223645)
+
+17zuoye3年前
+
+设计模式内容太多 作者写不完的
+
+2
+
+回复
+
+[![离城梦的头像](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/mirror-assets/168e097e83e8475f66d~tplv-t2oaga2asx-no-mark:100:100:100:100.awebp)](https://juejin.cn/user/3825956195154750)
+
+[离城梦](https://juejin.cn/user/3825956195154750)
+
+3年前
+
+这是多长时间更新一次啊，感觉过了一个世纪
+
+点赞
+
+回复
+
+[![闹闹不爱闹的头像](https://p3-passport.byteacctimg.com/img/user-avatar/726ed965fc251fee5e9f4df30ad7fcbe~300x300.image)](https://juejin.cn/user/114004939250392)
+
+[闹闹不爱闹![lv-2](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/f597b88d22ce5370bd94495780459040.svg)](https://juejin.cn/user/114004939250392)
+
+3年前
+
+这本书还更吗？
+
+点赞
+
+回复
+
+[![chechebecomestrong的头像](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6746a299fa754064b631a97aa912c6fb~tplv-k3u1fbpfcp-no-mark:100:100:100:100.awebp?)](https://juejin.cn/user/3051900008924632)
+
+[chechebecomestrong![lv-1](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/636691cd590f92898cfcda37357472b8.svg)](https://juejin.cn/user/3051900008924632)
+
+前端 @ 打杂3年前
+
+设计模式 这个会是大头吧，期待作者详细写设计模式
+
+点赞
+
+回复
+
+[![法令男的头像](https://p9-passport.byteacctimg.com/img/user-avatar/a8d06095db8bf7051ea3b144577ec4d7~300x300.image)](https://juejin.cn/user/2031553218354734)
+
+[法令男![lv-2](https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/f597b88d22ce5370bd94495780459040.svg)](https://juejin.cn/user/2031553218354734)
+
+3年前
+
+请问作者下一个更新的章节是TCP吗？
+
+点赞
+
+回复
+
+[![RedJam的头像](https://p26-passport.byteacctimg.com/img/user-avatar/60f0d9cd99cda0d5c03137ca9d6fbc80~300x300.image)](https://juejin.cn/user/1961184472074199)
+
+[RedJam](https://juejin.cn/user/1961184472074199)
+
+3年前
+
+单独分了一章出来，但是内容也太水了吧？
